@@ -15,14 +15,6 @@ pub fn find_saddle_points(input: &[Vec<u64>]) -> Vec<(usize, usize)> {
     return saddle_points;
 }
 
-fn is_less_or_equal(candidate: u64) -> impl Fn(u64) -> bool {
-    return move |other: u64| candidate <= other;
-}
-
-fn is_greater_or_equal(candidate: u64) -> impl Fn(u64) -> bool {
-    return move |other: u64| candidate >= other;
-}
-
 pub fn row(input: &[Vec<u64>], y: usize) -> Vec<u64> {
     return input[y].to_owned();
 }
@@ -39,12 +31,12 @@ fn is_saddle_point2(input: &[Vec<u64>], y: usize, x: usize) -> bool {
 
     let max_in_row: bool = r
         .into_iter()
-        .map(is_greater_or_equal(value))
+        .map(|other: u64| value >= other)
         .fold(true, |acc: bool, el: bool| acc && el);
 
     let min_in_column: bool = c
         .into_iter()
-        .map(is_less_or_equal(value))
+        .map(|other: u64| value <= other)
         .fold(true, |acc: bool, el: bool| acc && el);
 
     return min_in_column && max_in_row;
