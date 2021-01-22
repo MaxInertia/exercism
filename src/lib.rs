@@ -5,8 +5,10 @@ pub fn find_saddle_points(input: &[Vec<u64>]) -> Vec<(usize, usize)> {
     let mut saddle_points = vec![];
     for x in 0..cols.len() {
         for y in 0..rows.len() {
-            if is_saddle_point(&cols, &rows, x, y) {
-                // my coordinates are (x, y), but they use (y, x)
+            let point_value = rows[y][x];
+            let row = &rows[y];
+            let col = &cols[x];
+            if is_saddle_point(col, row, point_value) {
                 saddle_points.push((y, x))
             }
         }
@@ -30,28 +32,16 @@ pub fn rows_to_columns(rows: &Vec<Vec<u64>>) -> Vec<Vec<u64>> {
     return cols
 }
 
-fn is_saddle_point(cols: &Vec<Vec<u64>>, rows: &Vec<Vec<u64>>, x: usize, y: usize) -> bool {
-    let point_value = &cols[x][y];
-    let row = &rows[y];
-    let col = &cols[x];
-
+fn is_saddle_point(col: &Vec<u64>, row: &Vec<u64>, point_value: u64) -> bool {
     let max_in_row: bool = row
         .into_iter()
-        .map(|other: &u64| point_value >= other)
+        .map(|other: &u64| point_value >= *other)
         .fold(true, |acc: bool, el: bool| acc && el);
 
     let min_in_column: bool = col
         .into_iter()
-        .map(|other: &u64| point_value <= other)
+        .map(|other: &u64| point_value <= *other)
         .fold(true, |acc: bool, el: bool| acc && el);
 
     return min_in_column && max_in_row;
-}
-
-pub fn row(input: &Vec<Vec<u64>>, y: usize) -> Vec<u64> {
-    return input[y].to_owned();
-}
-
-pub fn column(input: &Vec<Vec<u64>>, x: usize) -> Vec<u64> {
-    return input.into_iter().map(|col: &Vec<u64>| col[x]).collect();
 }
