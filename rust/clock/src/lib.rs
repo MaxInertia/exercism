@@ -16,33 +16,25 @@ impl Clock {
 
     pub fn add_minutes(&self, minutes: i32) -> Self {
         let minutes_sum = self.minutes + minutes;
-        let hours_to_add = if minutes_sum < 0 {
-            (minutes_sum / 60) - 1
-        } else {
-            minutes_sum / 60
-        };
 
-        let raw_minutes = minutes_sum - (hours_to_add * 60);
+        let mut hours_to_add = minutes_sum / 60;
+        let mut minutes = minutes_sum - (hours_to_add * 60);
 
-        let minutes = if raw_minutes < 0 {
-            60 + (raw_minutes % 60)
-        } else {
-            raw_minutes
-        };
+        if minutes >= 60 {
+            hours_to_add += minutes / 60;
+            minutes = minutes % 60;
+        } else if minutes < 0 {
+            hours_to_add += (minutes / 60) - 1;
+            minutes = 60 + (minutes % 60);
+        }
 
         let mut hours = self.hours + hours_to_add;
-        hours = if raw_minutes >= 60 {
-            hours + raw_minutes / 60
-        } else {
-            hours
-        };
-        hours = if hours < 0 {
-            24 + (hours % 24)
-        } else {
-            hours
-        };
+        hours = if hours < 0 { 24 + (hours % 24) } else { hours };
 
-        Clock { hours: hours % 24, minutes: minutes % 60}
+        Clock {
+            hours: hours % 24,
+            minutes: minutes,
+        }
     }
 }
 
