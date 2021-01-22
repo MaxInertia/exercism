@@ -1,9 +1,9 @@
 pub fn encode(key: &str, s: &str) -> Option<String> {
-    return code(key, s, Variant::Encode)
+    return code(key, s, Variant::Encode);
 }
 
 pub fn decode(key: &str, s: &str) -> Option<String> {
-    return code(key, s, Variant::Decode)
+    return code(key, s, Variant::Decode);
 }
 
 enum Variant {
@@ -18,13 +18,13 @@ fn code(key: &str, s: &str, variant: Variant) -> Option<String> {
     };
 
     if key.len() == 0 {
-        return None
+        return None;
     }
 
     for key_char in key.chars() {
         let value = key_char as u8;
         if value > 122 || value < 97 {
-            return None
+            return None;
         }
     }
 
@@ -56,12 +56,24 @@ fn apply_shift_with_key(c: char, key: &str, i: usize, shift_direction: i16) -> c
         0
     };
 
-    return new_digit as u8 as char
+    return new_digit as u8 as char;
 }
 
+use rand::Rng;
+
+// Generates a random key with only a-z chars and encode {}. Return tuple (key, encoded s)
 pub fn encode_random(s: &str) -> (String, String) {
-    unimplemented!(
-        "Generate random key with only a-z chars and encode {}. Return tuple (key, encoded s)",
-        s
-    )
+    let key_size = if s.len() >= 100 { s.len() } else { 100 };
+
+    let mut key = String::new();
+    let mut rng = rand::thread_rng();
+    for _ in 0..key_size {
+        let new_key_char = rng.gen_range(97 as u8, 122 as u8) as char;
+        key += &new_key_char.to_string()
+    }
+
+    return match encode(key.as_str(), s) {
+        Some(encoded_s) => (key, encoded_s),
+        None => (key, String::new()),
+    };
 }
